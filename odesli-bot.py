@@ -65,12 +65,8 @@ def odesli(url, cc="DE"):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pass
 
-import json
-
 async def parse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     urls = find_all_urls(update.message.text)
-    print(update.message.text)
-    print(urls)
     if urls:
         for url in urls:
             try:

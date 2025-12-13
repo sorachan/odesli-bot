@@ -5,6 +5,14 @@ from dotenv import load_dotenv
 import requests
 import traceback
 
+# load $TOKEN from .env, else from command line:
+# (1) get a bot token from Telegram (@BotFather)
+# (2) pass it to the application as follows:
+#     (a) [recommended] in the file ".env" containing
+#         TOKEN="foobar"
+#     (b) [not recommended if using history] passing it as a runtime variable:
+#         bash$ TOKEN="foobar" python3 odesli-bot.py
+
 load_dotenv()
 
 token = os.getenv("TOKEN")
@@ -13,11 +21,31 @@ if not token:
     print("error: no $TOKEN provided", file=sys.stderr)
     exit(1)
 
+# defines output platforms: (un)comment according to your needs
+
 output_platforms = {
     "youtube": "YouTube",
     "spotify": "Spotify",
     "appleMusic": "Apple Music"
+    #     "itunes": "iTunes",
+    #     "youtubeMusic": "YouTube Music",
+    #     "google": "Google",
+    #     "pandora": "Pandora",
+    #     "deezer": "Deezer",
+    #     "tidal": "Tidal",
+    #     "amazonMusic": "Amazon Music",
+    #     "soundcloud": "SoundCloud",
+    #     "napster": "Napster",
+    #     "yandex": "Yandex Music",
+    #     "spinrilla": "Spinrilla",
+    #     "audius": "Audius",
+    #     "anghami": "Anghami",
+    #     "boomplay": "Booplay",
+    #     "audiomack": "Audiomack",
+    #     "bandcamp": "BandCamp",
 }
+
+# links that can be processed
 
 re_streaming = {
     "spotify": "https://open\\.spotify\\.com/\\S*",
@@ -31,10 +59,12 @@ re_streaming = {
     "tidal": "https://listen\\.tidal\\.com/\\S*",
     "yandex": "https://music\\.yandex\\.ru/\\S*",
     "audiomack": "https://audiomack\\.com/\\S*",
-    "anghami": "https://play\\.anghami\\.com/\\S*"
+    "anghami": "https://play\\.anghami\\.com/\\S*",
 }
 
 re_all = re.compile("|".join(v for v in re_streaming.values() if v))
+
+# the main program / helper functions
 
 def find_all_urls(msg):
     return re_all.findall(msg)
@@ -73,6 +103,8 @@ async def parse(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 await update.message.reply_text(odesli(url), parse_mode="Markdown", link_preview_options={"is_disabled": True}, reply_to_message_id=update.message.id)
             except:
                 traceback.print_exc()
+
+# setting everything up as a Telegram bot
 
 app = Application.builder().token(token).build()
 
